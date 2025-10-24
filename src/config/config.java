@@ -193,5 +193,20 @@ public void viewRecords(String sqlQuery, String[] columnHeaders, String[] column
     return records;
 }
     
+    public ResultSet queryRecord(String sql, Object... params) {
+    try {
+        Connection conn = this.connectDB();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+
+        for (int i = 0; i < params.length; i++) {
+            pstmt.setObject(i + 1, params[i]);
+        }
+
+        return pstmt.executeQuery();
+    } catch (SQLException e) {
+        System.out.println("Error querying record: " + e.getMessage());
+        return null;
+    }
+}
     
 }
