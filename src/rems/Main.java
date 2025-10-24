@@ -486,32 +486,73 @@ public class Main {
     }
 
     private static void scheduleAppointment() {
-        try {
-            System.out.print("Enter Property ID: ");
-            int propertyId = sc.nextInt(); sc.nextLine();
-            
-            System.out.print("Enter Date (YYYY-MM-DD): ");
-            String date = sc.nextLine();
-            System.out.print("Enter Time (HH:MM): ");
-            String time = sc.nextLine();
-            
-            String appointmentDateTime = date + " " + time;
-            
-            int clientId = currentUserId;
-            if (!currentRole.equalsIgnoreCase("Client")) {
-                System.out.print("Enter Client ID: ");
-                clientId = sc.nextInt(); sc.nextLine();
-            }
-
-            String sql = "INSERT INTO appointments (property_id, agent_id, client_id, appointment_date) VALUES (?,?,?,?)";
-            
-            cfg.addRecord(sql, propertyId, currentUserId, clientId, appointmentDateTime);
-            System.out.println("Appointment scheduled successfully!");
-            
-        } catch (Exception e) {
-            System.out.println("Error scheduling appointment: " + e.getMessage());
+    try {
+        if (currentRole == null || currentUserId == 0) {
+            System.out.println("You must be logged in to schedule an appointment!");
+            return;
         }
+
+        System.out.print("Enter Property ID: ");
+        int propertyId = sc.nextInt();
+        sc.nextLine();
+
+        // Check if property exists
+        String checkPropertySql = "SELECT title, status FROM properties WHERE property_id=?";
+        ResultSet rs = cfg.queryRecord(checkPropertySql, propertyId);
+
+        if (!rs.next()) {
+            System.out.println("Property not found!");
+            return;
+        }
+
+        String propertyTitle = rs.getString("title");
+        String propertyStatus = rs.getString("status");
+
+        if (!propertyStatus.equalsIgnoreCase("available")) {
+            System.out.println("Property is not available for viewing!");
+            return;
+        }
+
+        System.out.println("Scheduling appointment for property: " + propertyTitle);
+
+        System.out.print("Enter Date (YYYY-MM-DD): ");
+        String date = sc.nextLine().trim();
+
+        System.out.print("Enter Time (HH:MM): ");
+        String time = sc.nextLine().trim();
+
+        String appointmentDateTime = date + " " + time;
+
+        if (!date.matches("\\d{4}-\\d{2}-\\d{2}") || !time.matches("\\d{2}:\\d{2}")) {
+            System.out.println("Invalid date or time format!");
+            return;
+        }
+
+        int clientId = currentUserId;
+        if (!currentRole.equalsIgnoreCase("Client")) {
+            System.out.print("Enter Client ID: ");
+            clientId = sc.nextInt();
+            sc.nextLine();
+        }
+
+        // Check for conflict
+        String conflictCheckSql = "SELECT * FROM appointments WHERE client_id=? AND appointment_date=?";
+        if (cfg.recordExists(conflictCheckSql, clientId, appointmentDateTime)) {
+            System.out.println("You already have an appointment scheduled at that time!");
+            return;
+        }
+
+        String sql = "INSERT INTO appointments (property_id, agent_id, client_id, appointment_date) VALUES (?, ?, ?, ?)";
+        cfg.addRecord(sql, propertyId, currentUserId, clientId, appointmentDateTime);
+
+        System.out.println("✅ Appointment scheduled successfully for " + appointmentDateTime + "!");
+
+    } catch (Exception e) {
+        System.out.println("⚠️ Error scheduling appointment: " + e.getMessage());
     }
+}
+
+
 
     private static void viewMyAppointments() {
         String sql;
