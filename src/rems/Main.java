@@ -1,6 +1,7 @@
 package rems;
 
 import config.config;
+import java.sql.ResultSet;
 import java.util.*;
 
 public class Main {
@@ -10,6 +11,12 @@ public class Main {
     private static String currentUser = "";
     private static String currentRole = "";
     private static int currentUserId = 0;
+    static UserManager userManager = new UserManager();
+    static PropertyManager propertyManager = new PropertyManager();
+    static CommunicationSystem communicationSystem = new CommunicationSystem();
+    static DocumentManager documentManager = new DocumentManager();
+    static ReportingAnalytics  reportingAnalytics = new ReportingAnalytics();
+    static ClientManager clientManager = new ClientManager(cfg, sc);
 
     public static void main(String[] args) {
         initializeDatabase();
@@ -80,24 +87,29 @@ public class Main {
     System.out.println("2. Manage Users");
     System.out.println("3. View Sales Reports");
     System.out.println("4. View Commissions");
-    System.out.println("5. Document Management"); // NEW
-    System.out.println("6. Communication System"); // NEW
-    System.out.println("7. Reporting & Analytics"); // NEW
+    System.out.println("5. Document Management");
+    System.out.println("6. Communication System"); 
+    System.out.println("7. Reporting & Analytics");
     System.out.println("8. System Reports");
-    System.out.println("9. Logout");
+    System.out.println("9. My Profile"); 
+    System.out.println("10. Change Password"); 
+    System.out.println("11. Logout");
     System.out.print("Choose option: ");
     
     int choice = sc.nextInt(); sc.nextLine();
     switch (choice) {
-        case 1: manageProperties(); break;
-        case 2: manageUsers(); break;
-        case 3: viewSalesReports(); break;
+        case 1: propertyManager.showMenu(); 
+                break;
+        case 2: userManager.manageUsers(); break;
+        case 3: reportingAnalytics.viewSalesReports(); break;
         case 4: viewCommissions(); break;
-        case 5: documentManagement(); break; // NEW
-        case 6: communicationSystem(); break; // NEW
-        case 7: reportingAnalytics(); break; // NEW
-        case 8: generateReports(); break;
-        case 9: logout(); break;
+        case 5: documentManager.showMenu(); break;  // Fixed
+        case 6: communicationSystem.showMenu(currentUserId, currentUser); break;
+        case 7: reportingAnalytics.showMenu();  break;
+        case 8: reportingAnalytics.generateReports(); break;
+        case 9: viewMyProfile(); break;
+        case 10: changePassword(); break;
+        case 11: logout(); break;
         default: System.out.println("Invalid choice!");
     }
 }
@@ -112,47 +124,76 @@ public class Main {
         System.out.println("7. View My Appointments");
         System.out.println("8. View My Commissions");
         System.out.println("9. Manage Clients");
-        System.out.println("10. Document Management"); // NEW
-        System.out.println("11. Communication System"); // NEW
-        System.out.println("12. Logout");
+        System.out.println("10. Document Management");
+        System.out.println("11. Communication System"); 
+        System.out.println("12. Update Appointment Status");
+        System.out.println("13. Cancel Appointment");
+        System.out.println("14. My Profile");
+        System.out.println("15. Change Password");
+        System.out.println("16. Logout");
         System.out.print("Choose option: ");
         
         int choice = sc.nextInt(); sc.nextLine();
-        switch (choice) {
-            case 1: addProperty(); break;
-            case 2: viewMyProperties(); break;
-            case 3: searchProperty(); break;
-            case 4: updateProperty(); break;
-            case 5: recordSale(); break;
-            case 6: scheduleAppointment(); break;
-            case 7: viewMyAppointments(); break;
-            case 8: viewCommissions(); break;
-            case 9: manageClients(); break;
-            case 10: documentManagement(); break; // NEW
-            case 11: communicationSystem(); break; // NEW
-            case 12: logout(); break;
-            default: System.out.println("Invalid choice!");
-    }
+    switch (choice) {
+                case 1: 
+                    addProperty(); 
+                        break;
+                case 2: 
+                    viewMyProperties();
+                        break;
+                case 3: 
+                    searchProperty();
+                        break;
+                case 4: 
+                    PropertyManager.updateProperty(); 
+                        break;
+                case 5: 
+                    recordSale(); 
+                        break;
+                case 6: 
+                    scheduleAppointment();
+                        break;
+                case 7: viewMyAppointments(); 
+                        break;
+                case 8: 
+                    viewCommissions(); 
+                        break;
+                case 9: clientManager.showMenu(); break;
+                case 10: documentManager.showMenu(); break;
+                case 11: communicationSystem.showMenu(currentUserId, currentUser); break;
+                case 12: updateAppointmentStatus(); break;  
+                case 13: cancelAppointment(); break;        
+                case 14: viewMyProfile(); break;            
+                case 15: changePassword(); break;           
+                case 16: logout(); break;                   
+                default: System.out.println("Invalid choice!");
+            }
 }
     
     private static void showClientMenu() {
-        System.out.println("1. View All Properties");
-        System.out.println("2. Search Properties");
-        System.out.println("3. Schedule Viewing");
-        System.out.println("4. My Appointments");
-        System.out.println("5. Communication System"); // NEW
-        System.out.println("6. Logout");
-        System.out.print("Choose option: ");
+    System.out.println("1. View My Properties");
+    System.out.println("2. Search Properties");
+    System.out.println("3. Schedule Viewing");
+    System.out.println("4. My Appointments");
+    System.out.println("5. Communication System");
+    System.out.println("6. Cancel Appointment");    
+    System.out.println("7. My Profile");            
+    System.out.println("8. change Password");   
+    System.out.println("9. Logout");
+    System.out.print("Choose option: ");
 
-        int choice = sc.nextInt(); sc.nextLine();
-        switch (choice) {
-            case 1: viewAllProperties(); break;
-            case 2: searchProperty(); break;
-            case 3: scheduleAppointment(); break;
-            case 4: viewMyAppointments(); break;
-            case 5: communicationSystem(); break; // NEW
-            case 6: logout(); break;
-            default: System.out.println("Invalid choice!");
+    int choice = sc.nextInt(); sc.nextLine();
+    switch (choice) {
+        case 1: viewMyProperties(); break;
+        case 2: searchProperty(); break;
+        case 3: scheduleAppointment(); break;
+        case 4: viewMyAppointments(); break;
+        case 5: communicationSystem.showMenu(currentUserId, currentUser); break;
+        case 6: cancelAppointment(); break;        
+        case 7: viewMyProfile(); break;             
+        case 8: changePassword(); break;           
+        case 9: logout(); break;                    
+        default: System.out.println("Invalid choice!");
     }
 }
 
@@ -259,9 +300,9 @@ public class Main {
         }
 
         String hashedPassword = SecurityUtils.hashPassword(password);
-        String sql = "INSERT INTO users (username, email, password_hash, role, first_name, last_name, phone) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO users (username, email, password_hash, role, first_name, last_name, phone, status) VALUES (?,?,?,?,?,?,?,?)";
         
-        cfg.addRecord(sql, username, email, hashedPassword, role, firstName, lastName, phone);
+        cfg.addRecord(sql, username, email, hashedPassword, role, firstName, lastName, phone, "Pending");
         System.out.println("Registration successful! You can now login with your credentials.");
         
     } catch (Exception e) {
@@ -270,114 +311,188 @@ public class Main {
     }
 }
 
-    private static void loginUser() {
+private static void loginUser() {
     try {
         System.out.print("Enter username, email, or phone: ");
         String identifier = sc.nextLine();
-        
-        // Check what type of identifier was entered
+
+        // Detect identifier type
         boolean isPhone = identifier.matches("\\d+");
         boolean isEmail = identifier.contains("@");
         boolean isUsername = !isPhone && !isEmail;
-        
-        // First, check if the identifier exists in the system
-        String checkUserSql = "SELECT * FROM users WHERE username=? OR email=? OR phone=? AND is_active=1";
+
+        // FIXED SQL: correct parentheses + check active status
+        String checkUserSql =
+            "SELECT * FROM users WHERE (username=? OR email=? OR phone=?) AND is_active=1";
+
         List<Map<String, Object>> userCheck = cfg.fetchRecords(checkUserSql, identifier, identifier, identifier);
-        
+
         if (userCheck.isEmpty()) {
-            if (isPhone) {
-                System.out.println("No account found with phone number: " + identifier);
-            } else if (isEmail) {
-                System.out.println("No account found with email: " + identifier);
-            } else {
-                System.out.println("No account found with username: " + identifier);
-            }
+            System.out.println("No account found with: " + identifier);
             return;
         }
-        
+
+        // User exists, check status & role
+        Map<String, Object> foundUser = userCheck.get(0);
+        String status = foundUser.get("status").toString();
+        String role = foundUser.get("role").toString();
+
+        // ADMIN CAN ALWAYS LOGIN
+        if (role.equalsIgnoreCase("Admin")) {
+            System.out.println("Admin detected — bypassing account approval.");
+        }
+        // NON-ADMINS MUST BE APPROVED
+        else if (!status.equalsIgnoreCase("Approved")) {
+            System.out.println("Your account status is: " + status + ". You cannot log in until an admin approves your account.");
+            return;
+        }
+
         int attempts = 3;
         boolean loginSuccess = false;
-        
+
         while (attempts > 0 && !loginSuccess) {
             System.out.print("Enter password (" + attempts + " attempts remaining): ");
             String password = sc.nextLine();
-
             String hashedPassword = SecurityUtils.hashPassword(password);
-            
+
             String sql;
+            List<Map<String, Object>> users;
+
+            // LOGIN BY PHONE
             if (isPhone) {
                 sql = "SELECT * FROM users WHERE phone=? AND password_hash=? AND is_active=1";
-            } else {
-                sql = "SELECT * FROM users WHERE (username=? OR email=?) AND password_hash=? AND is_active=1";
-            }
-            
-            List<Map<String, Object>> users;
-            if (isPhone) {
                 users = cfg.fetchRecords(sql, identifier, hashedPassword);
-            } else {
+            }
+            // LOGIN BY USERNAME OR EMAIL
+            else {
+                sql = "SELECT * FROM users WHERE (username=? OR email=?) AND password_hash=? AND is_active=1";
                 users = cfg.fetchRecords(sql, identifier, identifier, hashedPassword);
             }
-            
+
             if (!users.isEmpty()) {
                 Map<String, Object> user = users.get(0);
+
+                // Set session details
                 currentUser = user.get("username").toString();
                 currentRole = user.get("role").toString();
                 currentUserId = Integer.parseInt(user.get("user_id").toString());
                 loggedIn = true;
                 loginSuccess = true;
-                
+
                 String loginMethod = isPhone ? "phone" : (isEmail ? "email" : "username");
                 System.out.println("Login successful! Welcome " + currentUser + " (logged in with " + loginMethod + ")");
+                return;
             } else {
                 attempts--;
                 if (attempts > 0) {
-                    System.out.println("Incorrect password. Please try again.");
+                    System.out.println("Incorrect password. Try again.");
                 } else {
                     System.out.println("Too many failed attempts. Returning to main menu.");
                 }
             }
         }
-        
+
     } catch (Exception e) {
         System.out.println("Login error: " + e.getMessage());
     }
 }
+
+
     
-    private static void addProperty() {
-        try {
-            System.out.print("Enter title: ");
-            String title = sc.nextLine();
-            System.out.print("Enter type (house, lot, condo, apartment, villa): ");
-            String type = sc.nextLine();
-            System.out.print("Enter price: ");
-            double price = sc.nextDouble(); sc.nextLine();
-            System.out.print("Enter location: ");
-            String location = sc.nextLine();
-            System.out.print("Enter size (sqft): ");
-            int size = sc.nextInt(); sc.nextLine();
-            System.out.print("Enter bedrooms: ");
-            int bedrooms = sc.nextInt(); sc.nextLine();
-            System.out.print("Enter bathrooms: ");
-            int bathrooms = sc.nextInt(); sc.nextLine();
-            System.out.print("Enter description: ");
-            String description = sc.nextLine();
+   private static void addProperty() {
+    try {
+        System.out.print("Enter title: ");
+        String title = sc.nextLine();
 
-            String sql = "INSERT INTO properties (title, type, price, location, description, size_sqft, bedrooms, bathrooms, created_by) VALUES (?,?,?,?,?,?,?,?,?)";
-            
-            cfg.addRecord(sql, title, type, price, location, description, size, bedrooms, bathrooms, currentUserId);
-            System.out.println("Property added successfully!");
-            
-        } catch (Exception e) {
-            System.out.println("Error adding property: " + e.getMessage());
+        System.out.print("Enter type (house, lot, condo, apartment, villa): ");
+        String type = sc.nextLine().toLowerCase();
+
+        // Validate type (optional but good practice)
+        String[] allowedTypes = {"house", "lot", "condo", "apartment", "villa"};
+        boolean validType = java.util.Arrays.asList(allowedTypes).contains(type);
+        if (!validType) {
+            System.out.println("Invalid type! Property not added.");
+            return;
         }
-    }
 
-    private static void viewAllProperties() {
-        String sql = "SELECT * FROM properties WHERE status != 'sold'";
-        String[] headers = {"ID","Title","Type","Price","Location","Bedrooms","Status"};
-        String[] columns = {"property_id","title","type","price","location","bedrooms","status"};
-        cfg.viewRecords(sql, headers, columns);
+        // ---- PRICE (SAFE INPUT) ----
+        double price = 0;
+        while (true) {
+            try {
+                System.out.print("Enter price: ");
+                price = Double.parseDouble(sc.nextLine());
+                break; // exit loop if correct
+            } catch (Exception e) {
+                System.out.println("Invalid price! Please enter numbers only.");
+            }
+        }
+
+        System.out.print("Enter location: ");
+        String location = sc.nextLine();
+
+        // ---- SIZE (SAFE INPUT) ----
+        int size = 0;
+        while (true) {
+            try {
+                System.out.print("Enter size in sqft: ");
+                size = Integer.parseInt(sc.nextLine());
+                break;
+            } catch (Exception e) {
+                System.out.println("Invalid size! Numbers only.");
+            }
+        }
+
+        // ---- BEDROOMS (SAFE INPUT) ----
+        int bedrooms = 0;
+        while (true) {
+            try {
+                System.out.print("Enter number of bedrooms: ");
+                bedrooms = Integer.parseInt(sc.nextLine());
+                break;
+            } catch (Exception e) {
+                System.out.println("Invalid input! Numbers only.");
+            }
+        }
+
+        // ---- BATHROOMS (SAFE INPUT) ----
+        int bathrooms = 0;
+        while (true) {
+            try {
+                System.out.print("Enter number of bathrooms: ");
+                bathrooms = Integer.parseInt(sc.nextLine());
+                break;
+            } catch (Exception e) {
+                System.out.println("Invalid input! Numbers only.");
+            }
+        }
+
+        System.out.print("Enter description: ");
+        String description = sc.nextLine();
+
+        // ---- SQL INSERT ----
+        String sql = "INSERT INTO properties (title, type, price, location, description, size_sqft, bedrooms, bathrooms, created_by) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        cfg.addRecord(sql,
+                title,
+                type,
+                price,
+                location,
+                description,
+                size,
+                bedrooms,
+                bathrooms,
+                currentUserId
+        );
+
+        System.out.println("Property added successfully!");
+
+    } catch (Exception e) {
+        System.out.println("Error adding property:");
+        e.printStackTrace();  // shows the real reason
     }
+}
+
 
     private static void viewMyProperties() {
         String sql = "SELECT * FROM properties WHERE created_by = ?";
@@ -458,31 +573,6 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Error recording sale: " + e.getMessage());
         }
-    }
-
-    private static void manageProperties() {
-        System.out.println("1. View All Properties");
-        System.out.println("2. Delete Property");
-        System.out.println("3. Update Property Status");
-        System.out.print("Choose option: ");
-        
-        int choice = sc.nextInt(); sc.nextLine();
-        switch (choice) {
-            case 1: viewAllProperties(); break;
-            case 2: deleteProperty(); break;
-            case 3: updatePropertyStatus(); break;
-        }
-    }
-
-    private static void updatePropertyStatus() {
-        System.out.print("Enter Property ID: ");
-        int id = sc.nextInt(); sc.nextLine();
-        System.out.print("Enter New Status (available/sold/pending/reserved): ");
-        String status = sc.nextLine();
-        
-        String sql = "UPDATE properties SET status=? WHERE property_id=?";
-        cfg.updateRecord(sql, status, id);
-        System.out.println("Property status updated!");
     }
 
     private static void scheduleAppointment() {
@@ -601,98 +691,6 @@ public class Main {
         }
     }
 
-    private static void manageUsers() {
-        String sql = "SELECT user_id, username, email, role, first_name, last_name, is_active FROM users";
-        String[] headers = {"ID", "Username", "Email", "Role", "First Name", "Last Name", "Active"};
-        String[] columns = {"user_id", "username", "email", "role", "first_name", "last_name", "is_active"};
-        cfg.viewRecords(sql, headers, columns);
-    }
-
-    private static void manageClients() {
-        String sql = "SELECT user_id, username, email, first_name, last_name, phone FROM users WHERE role='Client'";
-        String[] headers = {"ID", "Username", "Email", "First Name", "Last Name", "Phone"};
-        String[] columns = {"user_id", "username", "email", "first_name", "last_name", "phone"};
-        cfg.viewRecords(sql, headers, columns);
-    }
-
-    private static void viewSalesReports() {
-        String sql = "SELECT s.sale_id, p.title, u1.username as agent, u2.username as client, " +
-                     "s.sale_price, s.commission_amount, s.sale_date " +
-                     "FROM sales s " +
-                     "JOIN properties p ON s.property_id = p.property_id " +
-                     "JOIN users u1 ON s.agent_id = u1.user_id " +
-                     "JOIN users u2 ON s.client_id = u2.user_id " +
-                     "ORDER BY s.sale_date DESC";
-        String[] headers = {"Sale ID", "Property", "Agent", "Client", "Sale Price", "Commission", "Date"};
-        String[] columns = {"sale_id", "title", "agent", "client", "sale_price", "commission_amount", "sale_date"};
-        cfg.viewRecords(sql, headers, columns);
-    }
-
-    private static void generateReports() {
-        System.out.println("=== SYSTEM REPORTS ===");
-        
-        System.out.println("\nProperties by Status:");
-        String sql = "SELECT status, COUNT(*) as count FROM properties GROUP BY status";
-        String[] headers = {"Status", "Count"};
-        String[] columns = {"status", "count"};
-        cfg.viewRecords(sql, headers, columns);
-        
-        System.out.println("\nMonthly Sales:");
-        sql = "SELECT strftime('%m', sale_date) as month, SUM(sale_price) as total_sales, SUM(commission_amount) as total_commissions " +
-              "FROM sales GROUP BY strftime('%m', sale_date)";
-        headers = new String[]{"Month", "Total Sales", "Total Commissions"};
-        columns = new String[]{"month", "total_sales", "total_commissions"};
-        cfg.viewRecords(sql, headers, columns);
-    }
-
-    private static void updateProperty() {
-        try {
-            System.out.print("Property ID to update: ");
-            int id = sc.nextInt(); sc.nextLine();
-            String checkSql = "SELECT * FROM properties WHERE property_id=?";
-            if (!cfg.recordExists(checkSql, id)) { 
-                System.out.println("Property not found."); 
-                return; 
-            }
-
-            System.out.print("New title: "); String title = sc.nextLine();
-            System.out.print("New type: "); String type = sc.nextLine();
-            System.out.print("New price: "); double price = sc.nextDouble(); sc.nextLine();
-            System.out.print("New location: "); String location = sc.nextLine();
-            System.out.print("New description: "); String description = sc.nextLine();
-
-            String sql = "UPDATE properties SET title=?,type=?,price=?,location=?,description=? WHERE property_id=?";
-            cfg.updateRecord(sql, title, type, price, location, description, id);
-            System.out.println("Property updated successfully!");
-            
-        } catch (Exception e) {
-            System.out.println("Error updating property: " + e.getMessage());
-        }
-    }
-
-    private static void deleteProperty() {
-        try {
-            System.out.print("Property ID to delete: ");
-            int id = sc.nextInt(); sc.nextLine();
-            String checkSql = "SELECT * FROM properties WHERE property_id=?";
-            if (!cfg.recordExists(checkSql, id)) { 
-                System.out.println("Property not found."); 
-                return; 
-            }
-
-            System.out.print("Confirm delete? (y/n): ");
-            String confirm = sc.nextLine();
-            if(confirm.equalsIgnoreCase("y")) {
-                String sql = "DELETE FROM properties WHERE property_id=?";
-                cfg.deleteRecord(sql, id);
-            } else {
-                System.out.println("Deletion cancelled.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error deleting property: " + e.getMessage());
-        }
-    }
-
     private static void logout() {
         loggedIn = false;
         currentUser = "";
@@ -700,396 +698,157 @@ public class Main {
         currentUserId = 0;
         System.out.println("Logged out successfully!");
     }
-    
-    private static void documentManagement() {
-    System.out.println("\n=== DOCUMENT MANAGEMENT ===");
-    System.out.println("1. Upload Document");
-    System.out.println("2. View Documents");
-    System.out.println("3. Search Documents");
-    System.out.println("4. Delete Document");
-    System.out.println("5. Back to Main Menu");
-    System.out.print("Choose option: ");
-    
-    int choice = sc.nextInt(); sc.nextLine();
-    switch (choice) {
-        case 1: uploadDocument(); break;
-        case 2: viewDocuments(); break;
-        case 3: searchDocuments(); break;
-        case 4: deleteDocument(); break;
-        case 5: return;
-        default: System.out.println("Invalid choice!");
-    }
-}
 
-private static void uploadDocument() {
+private static void viewMyProfile() {
     try {
-        System.out.print("Enter Property ID (0 if not property-specific): ");
-        int propertyId = sc.nextInt(); sc.nextLine();
+        String sql = "SELECT user_id, username, email, role, first_name, last_name, phone, created_at " +
+                     "FROM users WHERE user_id=?";
         
-        System.out.print("Enter document type (contract, id_proof, ownership, invoice, other): ");
-        String docType = sc.nextLine();
+        String[] headers = {"ID", "Username", "Email", "Role", "First Name", "Last Name", "Phone", "Created At"};
+        String[] columns = {"user_id", "username", "email", "role", "first_name", "last_name", "phone", "created_at"};
         
-        System.out.print("Enter file name: ");
-        String fileName = sc.nextLine();
-        
-        System.out.print("Enter file path/URL: ");
-        String filePath = sc.nextLine();
-        
-        System.out.print("Enter file size in KB (optional, press enter to skip): ");
-        String sizeInput = sc.nextLine();
-        Integer fileSize = sizeInput.isEmpty() ? null : Integer.parseInt(sizeInput);
-        
-        System.out.print("Enter description (optional): ");
-        String description = sc.nextLine();
+        cfg.viewRecords(sql, headers, columns, currentUserId);
 
-        String sql = "INSERT INTO documents (property_id, document_type, file_name, file_path, file_size, uploaded_by, description) VALUES (?,?,?,?,?,?,?)";
-        
-        cfg.addRecord(sql, propertyId, docType, fileName, filePath, fileSize, currentUserId, description);
-        System.out.println("Document uploaded successfully!");
-        
     } catch (Exception e) {
-        System.out.println("Error uploading document: " + e.getMessage());
+        System.out.println("Error loading profile: " + e.getMessage());
     }
 }
 
-private static void viewDocuments() {
-    String sql = "SELECT d.document_id, p.title as property_title, d.document_type, d.file_name, " +
-                 "u.username as uploaded_by, d.uploaded_at " +
-                 "FROM documents d " +
-                 "LEFT JOIN properties p ON d.property_id = p.property_id " +
-                 "JOIN users u ON d.uploaded_by = u.user_id " +
-                 "ORDER BY d.uploaded_at DESC";
-    
-    String[] headers = {"Doc ID", "Property", "Type", "File Name", "Uploaded By", "Date"};
-    String[] columns = {"document_id", "property_title", "document_type", "file_name", "uploaded_by", "uploaded_at"};
-    cfg.viewRecords(sql, headers, columns);
-}
 
-private static void searchDocuments() {
-    System.out.println("Search by: 1) Property 2) Document Type 3) Uploader");
-    int searchType = sc.nextInt(); sc.nextLine();
-    
-    String sql;
-    String[] headers = {"Doc ID", "Property", "Type", "File Name", "Uploaded By", "Date"};
-    String[] columns = {"document_id", "property_title", "document_type", "file_name", "uploaded_by", "uploaded_at"};
-    
-    switch (searchType) {
-        case 1:
-            System.out.print("Enter Property ID: ");
-            int propertyId = sc.nextInt(); sc.nextLine();
-            sql = "SELECT d.document_id, p.title as property_title, d.document_type, d.file_name, " +
-                  "u.username as uploaded_by, d.uploaded_at " +
-                  "FROM documents d " +
-                  "LEFT JOIN properties p ON d.property_id = p.property_id " +
-                  "JOIN users u ON d.uploaded_by = u.user_id " +
-                  "WHERE d.property_id = ? " +
-                  "ORDER BY d.uploaded_at DESC";
-            cfg.viewRecords(sql, headers, columns, propertyId);
-            break;
-        case 2:
-            System.out.print("Enter Document Type: ");
-            String docType = sc.nextLine();
-            sql = "SELECT d.document_id, p.title as property_title, d.document_type, d.file_name, " +
-                  "u.username as uploaded_by, d.uploaded_at " +
-                  "FROM documents d " +
-                  "LEFT JOIN properties p ON d.property_id = p.property_id " +
-                  "JOIN users u ON d.uploaded_by = u.user_id " +
-                  "WHERE d.document_type LIKE ? " +
-                  "ORDER BY d.uploaded_at DESC";
-            cfg.viewRecords(sql, headers, columns, "%" + docType + "%");
-            break;
-        case 3:
-            System.out.print("Enter Uploader Username: ");
-            String uploader = sc.nextLine();
-            sql = "SELECT d.document_id, p.title as property_title, d.document_type, d.file_name, " +
-                  "u.username as uploaded_by, d.uploaded_at " +
-                  "FROM documents d " +
-                  "LEFT JOIN properties p ON d.property_id = p.property_id " +
-                  "JOIN users u ON d.uploaded_by = u.user_id " +
-                  "WHERE u.username LIKE ? " +
-                  "ORDER BY d.uploaded_at DESC";
-            cfg.viewRecords(sql, headers, columns, "%" + uploader + "%");
-            break;
-        default:
-            System.out.println("Invalid search option!");
-    }
-}
-
-private static void deleteDocument() {
+private static void updateMyProfile() {
     try {
-        System.out.print("Enter Document ID to delete: ");
-        int docId = sc.nextInt(); sc.nextLine();
+        System.out.print("Enter new first name (press enter to keep current): ");
+        String firstName = sc.nextLine();
         
-        String checkSql = "SELECT * FROM documents WHERE document_id=?";
-        if (!cfg.recordExists(checkSql, docId)) {
-            System.out.println("Document not found!");
+        System.out.print("Enter new last name (press enter to keep current): ");
+        String lastName = sc.nextLine();
+        
+        System.out.print("Enter new phone (press enter to keep current): ");
+        String phone = sc.nextLine();
+        
+        if (!phone.isEmpty() && !phone.matches("\\d{11}")) {
+            System.out.println("Phone must be 11 digits!");
             return;
         }
         
-        System.out.print("Are you sure you want to delete this document? (y/n): ");
-        String confirm = sc.nextLine();
+        String sql = "UPDATE users SET first_name=?, last_name=?, phone=? WHERE user_id=?";
+        cfg.updateRecord(sql, 
+            firstName.isEmpty() ? null : firstName,
+            lastName.isEmpty() ? null : lastName,
+            phone.isEmpty() ? null : phone,
+            currentUserId
+        );
         
-        if (confirm.equalsIgnoreCase("y")) {
-            String sql = "DELETE FROM documents WHERE document_id=?";
-            cfg.deleteRecord(sql, docId);
-            System.out.println("Document deleted successfully!");
+        System.out.println("Profile updated successfully!");
+        
+    } catch (Exception e) {
+        System.out.println("Error updating profile: " + e.getMessage());
+    }
+}
+
+private static void changePassword() {
+    try {
+        System.out.print("Enter current password: ");
+        String currentPassword = sc.nextLine();
+        
+        // Verify current password
+        String verifySql = "SELECT password_hash FROM users WHERE user_id=?";
+        List<Map<String, Object>> users = cfg.fetchRecords(verifySql, currentUserId);
+        
+        if (users.isEmpty()) {
+            System.out.println("User not found!");
+            return;
+        }
+        
+        String currentHash = users.get(0).get("password_hash").toString();
+        String enteredHash = SecurityUtils.hashPassword(currentPassword);
+        
+        if (!currentHash.equals(enteredHash)) {
+            System.out.println("Current password is incorrect!");
+            return;
+        }
+        
+        // Get new password
+        String newPassword;
+        while (true) {
+            System.out.print("Enter new password: ");
+            newPassword = sc.nextLine();
+            
+            if (!SecurityUtils.isStrongPassword(newPassword)) {
+                System.out.println("Password must be at least 8 characters with uppercase, lowercase and numbers!");
+            } else {
+                break;
+            }
+        }
+        
+        System.out.print("Confirm new password: ");
+        String confirmPassword = sc.nextLine();
+        
+        if (!newPassword.equals(confirmPassword)) {
+            System.out.println("Passwords don't match!");
+            return;
+        }
+        
+        String newHash = SecurityUtils.hashPassword(newPassword);
+        String updateSql = "UPDATE users SET password_hash=? WHERE user_id=?";
+        cfg.updateRecord(updateSql, newHash, currentUserId);
+        
+        System.out.println("Password changed successfully!");
+        
+    } catch (Exception e) {
+        System.out.println("Error changing password: " + e.getMessage());
+    }
+}
+
+private static void updateAppointmentStatus() {
+    try {
+        System.out.print("Enter Appointment ID: ");
+        int appointmentId = sc.nextInt(); sc.nextLine();
+        
+        System.out.print("Enter new status (scheduled/completed/cancelled): ");
+        String status = sc.nextLine();
+        
+        if (!status.equalsIgnoreCase("scheduled") && !status.equalsIgnoreCase("completed") && !status.equalsIgnoreCase("cancelled")) {
+            System.out.println("Invalid status! Use: scheduled, completed, or cancelled");
+            return;
+        }
+        
+        String sql = "UPDATE appointments SET status=? WHERE appointment_id=?";
+        cfg.updateRecord(sql, status.toLowerCase(), appointmentId);
+        
+        System.out.println("Appointment status updated!");
+        
+    } catch (Exception e) {
+        System.out.println("Error updating appointment: " + e.getMessage());
+    }
+}
+
+private static void cancelAppointment() {
+    try {
+        System.out.print("Enter Appointment ID to cancel: ");
+        int appointmentId = sc.nextInt(); sc.nextLine();
+        
+        // Check if appointment exists and belongs to current user
+        String checkSql;
+        if (currentRole.equalsIgnoreCase("Agent")) {
+            checkSql = "SELECT * FROM appointments WHERE appointment_id=? AND agent_id=?";
         } else {
-            System.out.println("Deletion cancelled.");
+            checkSql = "SELECT * FROM appointments WHERE appointment_id=? AND client_id=?";
         }
-    } catch (Exception e) {
-        System.out.println("Error deleting document: " + e.getMessage());
-    }
-}
-
-private static void communicationSystem() {
-    System.out.println("\n=== COMMUNICATION SYSTEM ===");
-    System.out.println("1. Send Message");
-    System.out.println("2. Inbox");
-    System.out.println("3. Sent Messages");
-    System.out.println("4. View Notifications");
-    System.out.println("5. Back to Main Menu");
-    System.out.print("Choose option: ");
-    
-    int choice = sc.nextInt(); sc.nextLine();
-    switch (choice) {
-        case 1: sendMessage(); break;
-        case 2: viewInbox(); break;
-        case 3: viewSentMessages(); break;
-        case 4: viewNotifications(); break;
-        case 5: return;
-        default: System.out.println("Invalid choice!");
-    }
-}
-
-private static void sendMessage() {
-    try {
-        String usersSql = "SELECT user_id, username, role FROM users WHERE user_id != ?";
-        String[] headers = {"User ID", "Username", "Role"};
-        String[] columns = {"user_id", "username", "role"};
-        System.out.println("\nAvailable Users:");
-        cfg.viewRecords(usersSql, headers, columns, currentUserId);
         
-        System.out.print("Enter recipient User ID: ");
-        int recipientId = sc.nextInt(); sc.nextLine();
-        
-        System.out.print("Enter message subject: ");
-        String subject = sc.nextLine();
-        
-        System.out.print("Enter message: ");
-        String message = sc.nextLine();
-        
-        String sql = "INSERT INTO messages (sender_id, recipient_id, subject, message) VALUES (?,?,?,?)";
-        cfg.addRecord(sql, currentUserId, recipientId, subject, message);
-        
-        String notifSql = "INSERT INTO notifications (user_id, notification_type, title, message) VALUES (?, 'message', 'New Message', ?)";
-        cfg.addRecord(notifSql, recipientId, "You have a new message from " + currentUser);
-        
-        System.out.println("Message sent successfully!");
-        
-    } catch (Exception e) {
-        System.out.println("Error sending message: " + e.getMessage());
-    }
-}
-
-private static void viewInbox() {
-    String sql = "SELECT m.message_id, u.username as sender, m.subject, m.message, m.sent_at, m.is_read " +
-                 "FROM messages m " +
-                 "JOIN users u ON m.sender_id = u.user_id " +
-                 "WHERE m.recipient_id = ? " +
-                 "ORDER BY m.sent_at DESC";
-    
-    String[] headers = {"Msg ID", "Sender", "Subject", "Message", "Sent At", "Read"};
-    String[] columns = {"message_id", "sender", "subject", "message", "sent_at", "is_read"};
-    cfg.viewRecords(sql, headers, columns, currentUserId);
-    
-    String updateSql = "UPDATE messages SET is_read=1 WHERE recipient_id=? AND is_read=0";
-    cfg.updateRecord(updateSql, currentUserId);
-}
-
-private static void viewSentMessages() {
-    String sql = "SELECT m.message_id, u.username as recipient, m.subject, m.message, m.sent_at " +
-                 "FROM messages m " +
-                 "JOIN users u ON m.recipient_id = u.user_id " +
-                 "WHERE m.sender_id = ? " +
-                 "ORDER BY m.sent_at DESC";
-    
-    String[] headers = {"Msg ID", "Recipient", "Subject", "Message", "Sent At"};
-    String[] columns = {"message_id", "recipient", "subject", "message", "sent_at"};
-    cfg.viewRecords(sql, headers, columns, currentUserId);
-}
-
-private static void viewNotifications() {
-    String sql = "SELECT notification_id, notification_type, title, message, created_at, is_read " +
-                 "FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
-    
-    String[] headers = {"Notif ID", "Type", "Title", "Message", "Created At", "Read"};
-    String[] columns = {"notification_id", "notification_type", "title", "message", "created_at", "is_read"};
-    cfg.viewRecords(sql, headers, columns, currentUserId);
-    
-    String updateSql = "UPDATE notifications SET is_read=1 WHERE user_id=? AND is_read=0";
-    cfg.updateRecord(updateSql, currentUserId);
-}
-
-private static void reportingAnalytics() {
-    System.out.println("\n=== REPORTING & ANALYTICS ===");
-    System.out.println("1. Sales Performance Report");
-    System.out.println("2. Agent Performance Report");
-    System.out.println("3. Property Performance Report");
-    System.out.println("4. Financial Summary");
-    System.out.println("5. System Statistics");
-    System.out.println("6. Back to Main Menu");
-    System.out.print("Choose option: ");
-    
-    int choice = sc.nextInt(); sc.nextLine();
-    switch (choice) {
-        case 1: salesPerformanceReport(); break;
-        case 2: agentPerformanceReport(); break;
-        case 3: propertyPerformanceReport(); break;
-        case 4: financialSummary(); break;
-        case 5: systemStatistics(); break;
-        case 6: return;
-        default: System.out.println("Invalid choice!");
-    }
-}
-
-private static void salesPerformanceReport() {
-    System.out.println("\n=== SALES PERFORMANCE REPORT ===");
-    
-    System.out.println("\nMonthly Sales Trend:");
-    String sql = "SELECT strftime('%Y-%m', sale_date) as month, " +
-                 "COUNT(sale_id) as total_sales, " +
-                 "SUM(sale_price) as total_revenue, " +
-                 "SUM(commission_amount) as total_commissions " +
-                 "FROM sales " +
-                 "GROUP BY strftime('%Y-%m', sale_date) " +
-                 "ORDER BY month DESC";
-    String[] headers = {"Month", "Total Sales", "Total Revenue", "Total Commissions"};
-    String[] columns = {"month", "total_sales", "total_revenue", "total_commissions"};
-    cfg.viewRecords(sql, headers, columns);
-    
-    System.out.println("\nTop Performing Properties:");
-    sql = "SELECT p.title, p.type, p.location, " +
-          "COUNT(s.sale_id) as times_sold, " +
-          "AVG(s.sale_price) as avg_sale_price " +
-          "FROM sales s " +
-          "JOIN properties p ON s.property_id = p.property_id " +
-          "GROUP BY p.property_id " +
-          "ORDER BY times_sold DESC " +
-          "LIMIT 10";
-    headers = new String[]{"Property", "Type", "Location", "Times Sold", "Avg Sale Price"};
-    columns = new String[]{"title", "type", "location", "times_sold", "avg_sale_price"};
-    cfg.viewRecords(sql, headers, columns);
-}
-
-private static void agentPerformanceReport() {
-    System.out.println("\n=== AGENT PERFORMANCE REPORT ===");
-    
-    String sql = "SELECT u.username, u.first_name, u.last_name, " +
-                 "COUNT(s.sale_id) as total_sales, " +
-                 "SUM(s.sale_price) as total_sales_volume, " +
-                 "SUM(s.commission_amount) as total_commissions, " +
-                 "AVG(s.commission_amount) as avg_commission " +
-                 "FROM sales s " +
-                 "JOIN users u ON s.agent_id = u.user_id " +
-                 "WHERE u.role = 'Agent' " +
-                 "GROUP BY u.user_id " +
-                 "ORDER BY total_commissions DESC";
-    
-    String[] headers = {"Agent", "First Name", "Last Name", "Total Sales", "Sales Volume", "Total Commissions", "Avg Commission"};
-    String[] columns = {"username", "first_name", "last_name", "total_sales", "total_sales_volume", "total_commissions", "avg_commission"};
-    cfg.viewRecords(sql, headers, columns);
-}
-
-private static void propertyPerformanceReport() {
-    System.out.println("\n=== PROPERTY PERFORMANCE REPORT ===");
-    
-    System.out.println("Properties by Status:");
-    String sql = "SELECT status, COUNT(*) as count, " +
-                 "AVG(price) as avg_price, " +
-                 "SUM(price) as total_value " +
-                 "FROM properties " +
-                 "GROUP BY status";
-    String[] headers = {"Status", "Count", "Average Price", "Total Value"};
-    String[] columns = {"status", "count", "avg_price", "total_value"};
-    cfg.viewRecords(sql, headers, columns);
-   
-    System.out.println("\nProperties by Type:");
-    sql = "SELECT type, COUNT(*) as count, " +
-          "AVG(price) as avg_price " +
-          "FROM properties " +
-          "GROUP BY type " +
-          "ORDER BY count DESC";
-    headers = new String[]{"Type", "Count", "Average Price"};
-    columns = new String[]{"type", "count", "avg_price"};
-    cfg.viewRecords(sql, headers, columns);
-}
-
-private static void financialSummary() {
-    System.out.println("\n=== FINANCIAL SUMMARY ===");
-    
-    String sql = "SELECT " +
-                 "COUNT(sale_id) as total_sales, " +
-                 "SUM(sale_price) as total_revenue, " +
-                 "SUM(commission_amount) as total_commissions, " +
-                 "AVG(sale_price) as avg_sale_price, " +
-                 "AVG(commission_amount) as avg_commission " +
-                 "FROM sales";
-    
-    String[] headers = {"Total Sales", "Total Revenue", "Total Commissions", "Avg Sale Price", "Avg Commission"};
-    String[] columns = {"total_sales", "total_revenue", "total_commissions", "avg_sale_price", "avg_commission"};
-    cfg.viewRecords(sql, headers, columns);
-    
-    System.out.println("\nMonthly Financial Trend (Last 6 Months):");
-    sql = "SELECT strftime('%Y-%m', sale_date) as month, " +
-          "SUM(sale_price) as monthly_revenue, " +
-          "SUM(commission_amount) as monthly_commissions " +
-          "FROM sales " +
-          "WHERE sale_date >= date('now', '-6 months') " +
-          "GROUP BY strftime('%Y-%m', sale_date) " +
-          "ORDER BY month DESC";
-    headers = new String[]{"Month", "Monthly Revenue", "Monthly Commissions"};
-    columns = new String[]{"month", "monthly_revenue", "monthly_commissions"};
-    cfg.viewRecords(sql, headers, columns);
-}
-
-private static void systemStatistics() {
-    System.out.println("\n=== SYSTEM STATISTICS ===");
-    
-    String userStats = "SELECT role, COUNT(*) as count FROM users WHERE is_active=1 GROUP BY role";
-    System.out.println("User Statistics:");
-    String[] headers = {"Role", "Count"};
-    String[] columns = {"role", "count"};
-    cfg.viewRecords(userStats, headers, columns);
-    
-    String propStats = "SELECT COUNT(*) as total_properties, " +
-                      "SUM(CASE WHEN status='available' THEN 1 ELSE 0 END) as available_properties, " +
-                      "SUM(CASE WHEN status='sold' THEN 1 ELSE 0 END) as sold_properties " +
-                      "FROM properties";
-    System.out.println("\nProperty Statistics:");
-    headers = new String[]{"Total Properties", "Available", "Sold"};
-    columns = new String[]{"total_properties", "available_properties", "sold_properties"};
-    cfg.viewRecords(propStats, headers, columns);
-    
-    System.out.println("\nRecent Activity (Last 7 Days):");
-    String recentSales = "SELECT COUNT(*) as recent_sales FROM sales WHERE sale_date >= date('now', '-7 days')";
-    String recentProps = "SELECT COUNT(*) as new_properties FROM properties WHERE created_at >= datetime('now', '-7 days')";
-    String recentUsers = "SELECT COUNT(*) as new_users FROM users WHERE created_at >= datetime('now', '-7 days')";
-
-    System.out.println("Recent Sales: " + getSingleValue(recentSales, "recent_sales"));
-    System.out.println("New Properties: " + getSingleValue(recentProps, "new_properties"));
-    System.out.println("New Users: " + getSingleValue(recentUsers, "new_users"));
-}
-
-private static String getSingleValue(String sql, String column) {
-    try {
-        List<Map<String, Object>> results = cfg.fetchRecords(sql);
-        if (!results.isEmpty()) {
-            return results.get(0).get(column).toString();
+        if (!cfg.recordExists(checkSql, appointmentId, currentUserId)) {
+            System.out.println("Appointment not found or you don't have permission to cancel it!");
+            return;
         }
+        
+        String sql = "UPDATE appointments SET status='cancelled' WHERE appointment_id=?";
+        cfg.updateRecord(sql, appointmentId);
+        
+        System.out.println("Appointment cancelled successfully!");
+        
     } catch (Exception e) {
-        System.out.println("Error getting value: " + e.getMessage());
+        System.out.println("Error cancelling appointment: " + e.getMessage());
     }
-    return "0";
 }
 
 }

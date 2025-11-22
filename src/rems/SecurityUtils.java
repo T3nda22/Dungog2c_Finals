@@ -35,4 +35,9 @@ public class SecurityUtils {
                password.matches(".*[a-z].*") && 
                password.matches(".*[0-9].*");
     }
+    
+    public static boolean verifyPassword(String password, String hashed) {
+    return hashPassword(password).equals(hashed);
+}
+
 }

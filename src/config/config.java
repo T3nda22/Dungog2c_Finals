@@ -123,7 +123,6 @@ public class config {
     }
 }
 
-    // Add this method to your config.java
 public void viewRecords(String sqlQuery, String[] columnHeaders, String[] columnNames, Object... params) {
     if (columnHeaders.length != columnNames.length) {
         System.out.println("Error: Mismatch between column headers and column names.");
@@ -132,13 +131,13 @@ public void viewRecords(String sqlQuery, String[] columnHeaders, String[] column
 
     try (Connection conn = this.connectDB();
          PreparedStatement pstmt = conn.prepareStatement(sqlQuery)) {
-        
-        // Set parameters if any
+
         for (int i = 0; i < params.length; i++) {
             pstmt.setObject(i + 1, params[i]);
         }
-        
+
         try (ResultSet rs = pstmt.executeQuery()) {
+
             StringBuilder headerLine = new StringBuilder();
             headerLine.append("--------------------------------------------------------------------------------\n| ");
             for (String header : columnHeaders) {
@@ -147,13 +146,22 @@ public void viewRecords(String sqlQuery, String[] columnHeaders, String[] column
             headerLine.append("\n--------------------------------------------------------------------------------");
             System.out.println(headerLine.toString());
 
+            boolean found = false;
+
             while (rs.next()) {
+                found = true;
                 StringBuilder row = new StringBuilder("| ");
+
                 for (String colName : columnNames) {
-                    String value = rs.getString(colName);
-                    row.append(String.format("%-20s | ", value != null ? value : ""));
+                    Object value = rs.getObject(colName);
+                    row.append(String.format("%-20s | ", value != null ? value.toString() : ""));
                 }
+
                 System.out.println(row.toString());
+            }
+
+            if (!found) {
+                System.out.println("| No matching properties found.");
             }
 
             System.out.println("--------------------------------------------------------------------------------");
@@ -163,6 +171,7 @@ public void viewRecords(String sqlQuery, String[] columnHeaders, String[] column
         System.out.println("Error retrieving records: " + e.getMessage());
     }
 }
+
     
     public java.util.List<java.util.Map<String, Object>> fetchRecords(String sqlQuery, Object... values) {
     java.util.List<java.util.Map<String, Object>> records = new java.util.ArrayList<>();
@@ -194,17 +203,28 @@ public void viewRecords(String sqlQuery, String[] columnHeaders, String[] column
 }
     
     public ResultSet queryRecord(String sql, Object... params) {
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    
     try {
-        Connection conn = this.connectDB();
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        conn = this.connectDB();
+        pstmt = conn.prepareStatement(sql);
 
         for (int i = 0; i < params.length; i++) {
             pstmt.setObject(i + 1, params[i]);
         }
 
         return pstmt.executeQuery();
+        // WARNING: Connection and Statement will remain open until ResultSet is closed!
     } catch (SQLException e) {
         System.out.println("Error querying record: " + e.getMessage());
+        // Close resources in case of error
+        try {
+            if (pstmt != null) pstmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException ex) {
+            System.out.println("Error closing resources: " + ex.getMessage());
+        }
         return null;
     }
 }
